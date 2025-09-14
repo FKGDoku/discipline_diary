@@ -8,19 +8,18 @@ use App\Services\TimeConverter;
 
 class MainPageController extends Controller
 {
-    public function main()
+    public function index()
     {
         $notes = DisciplineDiary::orderBy('id','desc')->paginate(7);
         $totalWeekMinutes = $notes->sum('total_minutes');
-        $this->minutesToHours($notes);
         $convertTotalWeek = TimeConverter::ConvertMinutesToHour($totalWeekMinutes);
-        //dump($totalWeekMinutes);
+       // dump($notes);
 
         return view('main', compact('notes', 'convertTotalWeek'));
 
     }
 
-    public function insert(Request $request)
+    public function store(Request $request)
     {
         $note = $request->validate([
             'it_minutes' => 'required|integer|min:1',
@@ -29,42 +28,14 @@ class MainPageController extends Controller
             'reading_minutes' => 'required|integer|min:1',
             'sport_approach' => 'required|integer|min:1',
         ]);
-        $minutesProductive = $note['it_minutes'] + $note['music_minutes'] +
+
+        $note['total_minutes'] = $note['it_minutes'] + $note['music_minutes'] +
             $note['english_minutes'] + $note['reading_minutes'];
 
-
-        $note['total_minutes'] = $minutesProductive;
         DisciplineDiary::create($note);
 
-        return redirect('/');
+        return redirect('/')->with('succes','Запись добавлена!');
 
     }
 
-
-    private function minutesToHours($activities)
-    {
-        $fields = ['it', 'music', 'english', 'reading','total'];
-        foreach ($activities as &$activity) {
-            foreach ($fields as $field) {
-                $minKey = $field . '_minutes';
-                $hourKey = $field . '_hours';
-
-                $minutesValue = $activity->$minKey;
-
-                if ($minutesValue >= 60) {
-                    $convert = TimeConverter::ConvertMinutesToHour($minutesValue); //смотри реализацию в app/Services/TimeConverter.php
-                    $activity->$minKey = $convert['minutes'];
-                    $activity->$hourKey = $convert['hours'];
-                }
-                else{
-                    $activity->$hourKey = 0;
-
-                }
-
-
-            }
-        }
-        unset($activity);
-        return $activities;
-    }
 }

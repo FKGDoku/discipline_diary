@@ -11,7 +11,8 @@
 
 <h2>Дневник Дисциплины</h2>
 
-<form action="{{'insert'}}">
+<form method="post" action="{{'store'}}">
+    @csrf
     <input type="number" name="it_minutes" placeholder="it_minutes">
     <input type="number" name="music_minutes" placeholder="music_minutes">
     <input type="number" name="english_minutes" placeholder="english_minutes">
@@ -37,12 +38,12 @@
     @foreach($notes as $note)
         <tr>
             <td>{{ $note->id }}</td>
-            <td>{{ $note->it_hours }}:{{ $note->it_minutes }}</td>
-            <td>{{ $note->music_hours }}:{{ $note->music_minutes }}</td>
-            <td>{{ $note->english_hours }}:{{ $note->english_minutes }}</td>
-            <td>{{ $note->reading_hours }}:{{ $note->reading_minutes }}</td>
+            <td>{{ $note->it_time['hours'] }}:{{ $note->it_time['minutes'] }}</td>
+            <td>{{ $note->music_time['hours'] }}:{{ $note->music_time['minutes'] }}</td>
+            <td>{{ $note->english_time['hours'] }}:{{ $note->english_time['minutes'] }}</td>
+            <td>{{ $note->reading_time['hours'] }}:{{ $note->reading_time['minutes'] }}</td>
             <td>{{ $note->sport_approach }}</td> <!-- Для подходов просто число -->
-            <td>{{ $note->total_hours }}:{{ $note->total_minutes }} и {{ $note->sport_approach }} подходов за {{$note->created_at}}</td>
+            <td>{{ $note->total_time['hours'] }}:{{ $note->total_time['minutes'] }} и {{ $note->sport_approach }} подходов за {{$note->date}}</td>
         </tr>
     @endforeach
     </tbody>
@@ -50,6 +51,7 @@
 всего продуктивного времени за неделю {{$convertTotalWeek['hours']}}:{{$convertTotalWeek['minutes']}}
 <br>
 {{ $notes->links() }} <!-- Пагинация -->
+
 
 </body>
 </html>
